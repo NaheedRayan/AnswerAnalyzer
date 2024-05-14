@@ -7,10 +7,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from langchain.chains import LLMChain
-from langchain_community.llms import GPT4All
-from langchain.prompts import PromptTemplate
 
 
 from langchain_google_genai import ChatGoogleGenerativeAI
