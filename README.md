@@ -1,12 +1,5 @@
-## Students Answer Script Analyzer
+# Students Answer Script Analyzer
 
-
-Certainly! Here's a template for a basic `README.md` file that you can customize for your project. This template covers essential sections like the project title, description, installation, usage, and contributions.
-
-
-# Project Title
-
-A brief description of what this project does and who it's for.
 
 ## Table of Contents
 
