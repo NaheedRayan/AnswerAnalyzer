@@ -16,6 +16,16 @@ genai.configure(api_key=os.getenv('GOOGLE_API_KEY'))
 
 model = genai.GenerativeModel('gemini-pro')
 
+
+def delete_file(file_path):
+    # Check if the file exists
+    if os.path.exists(file_path):
+        # Delete the file
+        os.remove(file_path)
+        st.success("File deleted successfully")
+    else:
+        st.error("File not found")
+
 def calculate_result(file_name):
 
     with st.spinner(f'Calculating {file_name}'):
@@ -97,10 +107,14 @@ for file_name in csv_files_of_students:
     
     with col2:
         if file_name in csv_files_results:
-            st.write('Done')
+            # st.write('Done')
+            if st.button(f'Delete {file_name}' ,type='primary'):
+                delete_file(f'student_result_doc/{file_name}')
+                st.rerun()
+            
         else:
             # for calculating student files
-            if st.button(f"Calculate {file_name}"):
+            if st.button(f"Calculate {file_name}" , type='secondary'):
                 calculate_result(file_name)
                 st.rerun()
 
@@ -139,11 +153,12 @@ df = pd.DataFrame(data)
 
 for file_name in csv_files_of_students_result:
     student_df = pd.read_csv(f'student_result_doc/{file_name}')
+    teacher_df = pd.read_csv(f'teacher_doc_parsed/teacher.csv')
     
     total_marks = 0
     obtained_marks = 0
-    for i in range(len(student_df['Question_mark'])):
-        received_number = re.findall(r'\d+', student_df.iloc[i]['Question_mark'])
+    for i in range(len(teacher_df['Question_mark'])):
+        received_number = re.findall(r'\d+', teacher_df.iloc[i]['Question_mark'])
         total_marks += int(received_number[0])
         # print(total_marks)
 
@@ -175,4 +190,4 @@ sorted_df.drop(columns=['Grade','Total'], inplace=True)
 print(sorted_df)
 # chart
 
-st.bar_chart(sorted_df.set_index('Name') , color='#FF7E4B')
+st.bar_chart(sorted_df.set_index('Name') , color='#f29b38')

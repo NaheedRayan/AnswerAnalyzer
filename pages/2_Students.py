@@ -29,9 +29,12 @@ def remove_files_in_directory(directory):
 
 st.write('### Actual Q&A from the Teacher')
 
-df = pd.read_csv('teacher_doc_parsed/teacher.csv')
-st.dataframe(df)
-st.divider()
+
+df= None
+if os.path.exists('teacher_doc_parsed/teacher.csv'):
+    df = pd.read_csv('teacher_doc_parsed/teacher.csv')
+    st.dataframe(df)
+    st.divider()
 
 
 
@@ -40,13 +43,15 @@ st.write('### Upload file')
 uploaded_files = st.file_uploader("Choose a PDF file", type="pdf", accept_multiple_files=True)
 
 
+# print(uploaded_files)
 
-
-
+import time
 
 
 for uploaded_file in uploaded_files:
-
+    
+    print('sleeping for 15 sec')
+    time.sleep(15)
     # Initialize an empty dictionary to store data
     data = {
         'Question_name': [],
@@ -82,19 +87,6 @@ for uploaded_file in uploaded_files:
             my_bar.progress( i/len(images) , text=f"Parsing Page {i}/{len(images)}")
 
 
-
-
-
-            # response = model.generate_content(['''Just only do OCR and show the output in appropriate python obj format 
-            #                                  {
-            #                                     Question_name : "Question01"
-            #                                     Question : "What is a cat"
-            #                                     Answer : "A cat is an animal"
-            #                                     Question_mark : "10"
-            #                                  }
-            #                                  ''', sample_file] ,  generation_config={'response_mime_type':'application/json'})
-
-
             response = model.generate_content(['''Just only do OCR and show the output using the following schema:
 
             {"data": list[QUESTION]}
@@ -117,6 +109,7 @@ for uploaded_file in uploaded_files:
                 # print(type(dict))
                 df = df._append(dict, ignore_index=True)
 
+
             # print(parser.get_format_instructions())
 
             # st.write(response.text)
@@ -125,6 +118,9 @@ for uploaded_file in uploaded_files:
 
             genai.delete_file(sample_file.name)
             print(f'Deleted page_{i}.jpg -- {sample_file.name}.')
+
+            print('sleeping 10sec')
+            time.sleep(10)
 
 
         my_bar.progress( 1.0 , text="Done")
@@ -145,6 +141,14 @@ for uploaded_file in uploaded_files:
 
 
 
+def delete_file(file_path):
+    # Check if the file exists
+    if os.path.exists(file_path):
+        # Delete the file
+        os.remove(file_path)
+        st.success("File deleted successfully")
+    else:
+        st.error("File not found")
 
 
 directory = 'student_doc_parsed'
@@ -153,14 +157,26 @@ def list_csv_files(directory):
     csv_files = [f for f in os.listdir(directory) if f.endswith('.csv')]
     return csv_files
 
+
+st.divider()
 if directory:
     if os.path.isdir(directory):
         st.write('### List of uploaded files')
         csv_files = list_csv_files(directory)
 
-        st.dataframe(csv_files)
-        # for csv_file in csv_files:
-        #     st.write(csv_file)
+        # st.dataframe(csv_files)
+
+      
+        for csv_file in csv_files:
+            col1 , col2 = st.columns([6,4])
+
+            with col1:
+                st.write(f'{csv_file}')
+
+            with col2:
+                if st.button(f'Delete {csv_file}' ,type='primary'):
+                    delete_file(f'student_doc_parsed/{csv_file}')
+                    st.rerun()
     else:
         st.write('Invalid directory path')
 

@@ -31,7 +31,11 @@ st.write('### Upload a pdf File with Q&A for parsing and processing')
 
 
 # file uploader
-uploaded_file = st.file_uploader("Choose a PDF file", type="pdf", accept_multiple_files=False)
+uploaded_file = None
+if os.path.exists('teacher_doc_parsed/teacher.csv'):
+    st.warning('Delete \'teacher.csv\' file before uploading a NEW file')
+else:
+    uploaded_file = st.file_uploader("Choose a PDF file", type="pdf", accept_multiple_files=False)
 
 
 
@@ -132,7 +136,7 @@ if uploaded_file is not None:
     # Save DataFrame to CSV
     df.to_csv('teacher_doc_parsed/teacher.csv', index=False)
     #editable dataframe 
-    edited_df = st.data_editor(df)
+    # edited_df = st.data_editor(df)
     
     # for key, value in sample_file_data.items():
     #     print(key, value)
@@ -141,6 +145,27 @@ if uploaded_file is not None:
     # clearing everything
     sample_file_data.clear
     remove_files_in_directory('teacher_doc_pic')
+    st.rerun()
+
+
+
+
+st.divider()
+
+if os.path.exists('teacher_doc_parsed/teacher.csv'):
+
+        df = pd.read_csv('teacher_doc_parsed/teacher.csv')
+        st.write(df)
+
+        st.divider()
+
+        # Delete the file
+
+        if st.button("Delete teacher.csv"):
+            os.remove('teacher_doc_parsed/teacher.csv')
+            st.success("File deleted successfully")
+            st.rerun()
+      
 
     
     
